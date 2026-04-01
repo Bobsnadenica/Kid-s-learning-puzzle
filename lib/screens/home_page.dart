@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../global.dart';
+import '../modal.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -19,29 +20,37 @@ class _HomePageState extends State<HomePage> {
         decoration: const BoxDecoration(
           image: DecorationImage(
             fit: BoxFit.cover,
-            image: AssetImage(
-              "assets/animals/game.jpg",
-            ),
+            image: AssetImage("assets/animals/game.jpg"),
           ),
         ),
         child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 14),
           children: [
-            InkWell(
-              onTap: () {
-                Global.list = Global.animals;
-                Global.image = "assets/animals/forest.jpg";
-                Navigator.of(context).pushNamed("game_page");
-              },
-              child:
-                  gameContainer("Animals Game", "assets/animals/animals.png"),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Text(
+                "Choose a Matching Game",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.brown.shade800,
+                  shadows: const [
+                    Shadow(color: Colors.white, blurRadius: 10),
+                  ],
+                ),
+              ),
             ),
-            InkWell(
-              onTap: () {
-                Global.list = Global.fruits;
-                Global.image = "assets/fruits/fruit_background.jpg";
-                Navigator.of(context).pushNamed("game_page");
-              },
-              child: gameContainer("Fruits Game", "assets/fruits/fruits.png"),
+            ...Global.categories.map(
+              (category) => InkWell(
+                onTap: () {
+                  Global.list = category.items;
+                  Global.image = category.backgroundImage;
+                  Global.title = category.title;
+                  Navigator.of(context).pushNamed("game_page");
+                },
+                child: gameContainer(category),
+              ),
             ),
           ],
         ),
@@ -49,28 +58,80 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  gameContainer(name, image) {
+  Widget gameContainer(GameCategory category) {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(14),
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.4),
+        color: Colors.white.withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.brown.shade700, width: 5),
+        border: Border.all(color: category.accentColor, width: 5),
       ),
-      child: Column(
+      child: Row(
         children: [
-          SizedBox(height: 210, child: Image.asset(image)),
-          Text(
-            name,
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w700,
-              color: Colors.brown.shade700,
+          Expanded(
+            flex: 2,
+            child: SizedBox(
+              height: 140,
+              child: Center(
+                child: _buildPreview(category),
+              ),
             ),
-          )
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  category.title,
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.brown.shade700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Match ${category.items.length} fun pictures to words",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.brown.shade500,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPreview(GameCategory category) {
+    if (category.previewImage != null) {
+      return Image.asset(category.previewImage!);
+    }
+
+    return Container(
+      width: 120,
+      height: 120,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: category.accentColor.withValues(alpha: 0.16),
+      ),
+      alignment: Alignment.center,
+      child: category.previewEmoji != null
+          ? Text(
+              category.previewEmoji!,
+              style: const TextStyle(fontSize: 64),
+            )
+          : Icon(
+              category.previewIcon,
+              size: 68,
+              color: category.accentColor,
+            ),
     );
   }
 }

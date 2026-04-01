@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../global.dart';
 
 class GamePage extends StatefulWidget {
-  const GamePage({Key? key}) : super(key: key);
+  const GamePage({super.key});
 
   @override
   State<GamePage> createState() => _GamePageState();
@@ -18,22 +18,25 @@ class _GamePageState extends State<GamePage> {
   @override
   void initState() {
     super.initState();
-    for (var e in Global.list) {
-      list2.add(e);
-    }
+    list2 = [...Global.list];
     list2.shuffle();
+    _resetDroppedState();
+  }
 
-    for (var e in Global.list) {
-      e.isDropped = false;
+  void _resetDroppedState() {
+    for (final item in Global.list) {
+      item.isDropped = false;
     }
-    for (var e in list2) {
-      e.isDropped = false;
+    for (final item in list2) {
+      item.isDropped = false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height * 0.16;
+    final double height = MediaQuery.of(context).size.height * 0.16;
+    final double feedbackWidth = MediaQuery.of(context).size.width * 0.38;
+
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -47,69 +50,77 @@ class _GamePageState extends State<GamePage> {
           alignment: Alignment.center,
           child: Column(
             children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
+                child: Text(
+                  Global.title.isEmpty ? "Matching Game" : Global.title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.brown.shade800,
+                    shadows: const [
+                      Shadow(color: Colors.white, blurRadius: 14),
+                    ],
+                  ),
+                ),
+              ),
               Expanded(
                 child: Row(
                   children: [
                     Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: Global.list.map((e) {
-                          int i = list2.indexOf(e);
-                          return Global.list[i].isDropped == true
-                              ? Container(
-                                  height: height,
-                                )
-                              : Draggable(
-                                  data: Global.list[i].value,
-                                  childWhenDragging: Container(
-                                    height: height,
-                                    padding: const EdgeInsets.all(10),
-                                    child: Image.asset(
-                                      Global.list[i].image,
+                        children: List.generate(Global.list.length, (index) {
+                          final item = Global.list[index];
+                          return item.isDropped
+                              ? SizedBox(height: height)
+                              : Draggable<String>(
+                                  data: item.value,
+                                  childWhenDragging: _buildMatchCard(
+                                    item,
+                                    height,
+                                    faded: true,
+                                  ),
+                                  feedback: Material(
+                                    color: Colors.transparent,
+                                    child: SizedBox(
+                                      width: feedbackWidth,
+                                      child: _buildMatchCard(item, height),
                                     ),
                                   ),
-                                  feedback: SizedBox(
-                                      height: height,
-                                      child: Image.asset(Global.list[i].image)),
-                                  child: Container(
-                                    height: height,
-                                    padding: const EdgeInsets.all(10),
-                                    child: Image.asset(
-                                      Global.list[i].image,
-                                    ),
-                                  ),
+                                  child: _buildMatchCard(item, height),
                                 );
-                        }).toList(),
+                        }),
                       ),
                     ),
                     Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: list2.map((e) {
-                          int i = list2.indexOf(e);
-                          return list2[i].isDropped == true
-                              ? Container(
-                                  height: height,
-                                )
-                              : DragTarget(
-                                  onAccept: (data) {
-                                    if (list2[i].value == data) {
+                        children: List.generate(list2.length, (index) {
+                          final item = list2[index];
+                          return item.isDropped
+                              ? SizedBox(height: height)
+                              : DragTarget<String>(
+                                  onAcceptWithDetails: (details) {
+                                    if (item.value == details.data) {
                                       setState(() {
-                                        for (var e in Global.list) {
-                                          if (e.value == list2[i].value) {
-                                            e.isDropped = true;
+                                        for (final sourceItem in Global.list) {
+                                          if (sourceItem.value == item.value) {
+                                            sourceItem.isDropped = true;
                                           }
                                         }
-                                        list2[i].isDropped = true;
+                                        item.isDropped = true;
                                         score += 10;
                                         gameOver++;
                                         if (gameOver == Global.list.length) {
                                           showDialog(
-                                              context: context,
-                                              barrierDismissible: false,
-                                              builder: (context) {
-                                                return dialog();
-                                              });
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (context) {
+                                              return dialog();
+                                            },
+                                          );
                                         }
                                       });
                                     } else {
@@ -118,35 +129,57 @@ class _GamePageState extends State<GamePage> {
                                       });
                                     }
                                   },
-                                  builder: (context, a, r) => Container(
-                                    height: height,
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      list2[i].value,
-                                      style: TextStyle(
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.brown.shade900,
-                                            blurRadius: 30,
-                                          ),
-                                          const Shadow(
-                                            color: Colors.black87,
-                                            blurRadius: 10,
-                                          ),
-                                          const Shadow(
-                                            color: Colors.black,
-                                            blurRadius: 25,
-                                          ),
-                                        ],
-                                        letterSpacing: 1.5,
-                                        color: Colors.yellow.shade800,
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 30,
+                                  builder:
+                                      (context, candidateData, rejectedData) {
+                                    return Container(
+                                      height: height,
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 10,
                                       ),
-                                    ),
-                                  ),
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(
+                                          alpha: candidateData.isNotEmpty
+                                              ? 0.65
+                                              : 0.45,
+                                        ),
+                                        borderRadius: BorderRadius.circular(24),
+                                        border: Border.all(
+                                          color: candidateData.isNotEmpty
+                                              ? Colors.green.shade600
+                                              : Colors.brown.shade700,
+                                          width: 3,
+                                        ),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        item.value,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          shadows: [
+                                            Shadow(
+                                              color: Colors.brown.shade900,
+                                              blurRadius: 30,
+                                            ),
+                                            const Shadow(
+                                              color: Colors.black87,
+                                              blurRadius: 10,
+                                            ),
+                                            const Shadow(
+                                              color: Colors.black,
+                                              blurRadius: 25,
+                                            ),
+                                          ],
+                                          letterSpacing: 1.5,
+                                          color: Colors.yellow.shade800,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 28,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 );
-                        }).toList(),
+                        }),
                       ),
                     ),
                   ],
@@ -155,7 +188,7 @@ class _GamePageState extends State<GamePage> {
               Container(
                 width: double.infinity,
                 alignment: Alignment.center,
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 padding: const EdgeInsets.all(12),
                 child: Text(
                   "  Your Score : $score",
@@ -165,7 +198,7 @@ class _GamePageState extends State<GamePage> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -173,7 +206,50 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  dialog() {
+  Widget _buildMatchCard(Content item, double height, {bool faded = false}) {
+    return Opacity(
+      opacity: faded ? 0.35 : 1,
+      child: Container(
+        height: height,
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.75),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: item.color ?? Colors.brown.shade400,
+            width: 3,
+          ),
+        ),
+        child: Center(
+          child: _buildItemVisual(item, height),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItemVisual(Content item, double height) {
+    if (item.image != null) {
+      return Image.asset(item.image!, fit: BoxFit.contain);
+    }
+
+    if (item.emoji != null) {
+      return FittedBox(
+        child: Text(
+          item.emoji!,
+          style: const TextStyle(fontSize: 64),
+        ),
+      );
+    }
+
+    return Icon(
+      item.icon,
+      size: height * 0.58,
+      color: item.color ?? Colors.brown.shade700,
+    );
+  }
+
+  AlertDialog dialog() {
     return AlertDialog(
       shape: OutlineInputBorder(
         borderRadius: BorderRadius.circular(30),
@@ -182,7 +258,7 @@ class _GamePageState extends State<GamePage> {
           width: 5,
         ),
       ),
-      backgroundColor: Colors.white.withOpacity(0.9),
+      backgroundColor: Colors.white.withValues(alpha: 0.9),
       title: Center(
         child: Text(
           "Game Over",
@@ -194,10 +270,10 @@ class _GamePageState extends State<GamePage> {
         ),
       ),
       content: Text(
-        textAlign: TextAlign.center,
         "- Your Score -\n$score",
+        textAlign: TextAlign.center,
         style: TextStyle(
-          color: Colors.black.withOpacity(0.7),
+          color: Colors.black.withValues(alpha: 0.7),
           fontWeight: FontWeight.bold,
           fontSize: 30,
         ),
@@ -237,25 +313,23 @@ class _GamePageState extends State<GamePage> {
                   setState(() {
                     Global.list.shuffle();
                     list2.shuffle();
-                    for (var e in Global.list) {
-                      e.isDropped = false;
-                    }
-                    for (var e in list2) {
-                      e.isDropped = false;
-                    }
+                    _resetDroppedState();
                     score = 0;
                     gameOver = 0;
                   });
                 },
-                child: Text("Restart",
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.brown.shade700,
-                        fontWeight: FontWeight.bold)),
+                child: Text(
+                  "Restart",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.brown.shade700,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
-        )
+        ),
       ],
     );
   }
