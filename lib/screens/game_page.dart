@@ -6,9 +6,9 @@ import 'package:lottie/lottie.dart';
 
 import '../global.dart';
 
-const _kLottieCorrect = 'assets/lottie/yes.lottie';
-const _kLottieWrong   = 'assets/lottie/no.lottie';
-const _kLottieWinner  = 'assets/lottie/conffeti.lottie';
+const _kLottieCorrect = 'assets/lottie/yes.json';
+const _kLottieWrong   = 'assets/lottie/no.json';
+const _kLottieWinner  = 'assets/lottie/confetti.json';
 
 enum _FeedbackType { none, correct, wrong, winner }
 
@@ -327,20 +327,22 @@ class _GamePageState extends State<GamePage> {
         ? Colors.red.shade400
         : Colors.green.shade400;
 
-    return IgnorePointer(
-      child: Container(
-        color: Colors.black.withValues(alpha: 0.15),
-        alignment: Alignment.center,
-        child: SizedBox(
-          width: 260,
-          height: 260,
-          child: Lottie.asset(
-            url,
-            repeat: false,
-            errorBuilder: (_, __, ___) => Icon(
-              fallbackIcon,
-              size: 120,
-              color: fallbackColor,
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: ColoredBox(
+          color: Colors.black.withValues(alpha: 0.30),
+          child: Center(
+            child: Lottie.asset(
+              url,
+              width: 280,
+              height: 280,
+              fit: BoxFit.contain,
+              repeat: false,
+              errorBuilder: (_, __, ___) => Icon(
+                fallbackIcon,
+                size: 120,
+                color: fallbackColor,
+              ),
             ),
           ),
         ),
