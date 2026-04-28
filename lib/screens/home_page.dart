@@ -11,8 +11,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  void _toggleLanguage() {
+    setState(() {
+      Global.language = Global.language == 'en' ? 'bg' : 'en';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bool isBg = Global.language == 'bg';
+
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -27,29 +35,43 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.symmetric(vertical: 14),
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              child: Text(
-                "Choose a Matching Game",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.brown.shade800,
-                  shadows: const [
-                    Shadow(color: Colors.white, blurRadius: 10),
-                  ],
-                ),
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      isBg ? "Избери игра" : "Choose a Game",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.brown.shade800,
+                        shadows: const [
+                          Shadow(color: Colors.white, blurRadius: 10),
+                        ],
+                      ),
+                    ),
+                  ),
+                  _buildLanguageToggle(),
+                ],
               ),
             ),
             ...Global.categories.map(
               (category) => InkWell(
                 onTap: () {
+                  // Reset dropped state each time a category is entered
+                  for (final item in category.items) {
+                    item.isDropped = false;
+                  }
                   Global.list = category.items;
                   Global.image = category.backgroundImage;
-                  Global.title = category.title;
+                  Global.title = isBg
+                      ? (category.bgTitle ?? category.title)
+                      : category.title;
                   Navigator.of(context).pushNamed("game_page");
                 },
-                child: gameContainer(category),
+                child: _gameContainer(category, isBg),
               ),
             ),
           ],
@@ -58,45 +80,81 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget gameContainer(GameCategory category) {
+  Widget _buildLanguageToggle() {
+    final bool isBg = Global.language == 'bg';
+    return GestureDetector(
+      onTap: _toggleLanguage,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.75),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.brown.shade400, width: 2),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '🇬🇧',
+              style: TextStyle(
+                fontSize: isBg ? 18 : 24,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              '🇧🇬',
+              style: TextStyle(
+                fontSize: isBg ? 24 : 18,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _gameContainer(GameCategory category, bool isBg) {
+    final String displayTitle =
+        isBg ? (category.bgTitle ?? category.title) : category.title;
+
     return Container(
-      padding: const EdgeInsets.all(14),
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: category.accentColor, width: 5),
+        border: Border.all(color: category.accentColor, width: 4),
       ),
       child: Row(
         children: [
           Expanded(
             flex: 2,
             child: SizedBox(
-              height: 140,
-              child: Center(
-                child: _buildPreview(category),
-              ),
+              height: 110,
+              child: Center(child: _buildPreview(category)),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
             flex: 3,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  category.title,
+                  displayTitle,
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 24,
                     fontWeight: FontWeight.w800,
                     color: Colors.brown.shade700,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
-                  "Match ${category.items.length} fun pictures to words",
+                  isBg
+                      ? "Свържи ${category.items.length} картинки с думи"
+                      : "Match ${category.items.length} pictures to words",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: Colors.brown.shade500,
                   ),
@@ -115,8 +173,8 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Container(
-      width: 120,
-      height: 120,
+      width: 100,
+      height: 100,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: category.accentColor.withValues(alpha: 0.16),
@@ -125,11 +183,11 @@ class _HomePageState extends State<HomePage> {
       child: category.previewEmoji != null
           ? Text(
               category.previewEmoji!,
-              style: const TextStyle(fontSize: 64),
+              style: const TextStyle(fontSize: 52),
             )
           : Icon(
               category.previewIcon,
-              size: 68,
+              size: 56,
               color: category.accentColor,
             ),
     );

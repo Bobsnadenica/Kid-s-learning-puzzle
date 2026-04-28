@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class Content {
   final String value;
+  final String? bg;
   final String? image;
   final String? emoji;
   final IconData? icon;
@@ -10,6 +11,7 @@ class Content {
 
   Content({
     required this.value,
+    this.bg,
     this.image,
     this.emoji,
     this.icon,
@@ -23,6 +25,7 @@ class Content {
 
 class GameCategory {
   final String title;
+  final String? bgTitle;
   final String backgroundImage;
   final List<Content> items;
   final String? previewImage;
@@ -32,6 +35,7 @@ class GameCategory {
 
   GameCategory({
     required this.title,
+    this.bgTitle,
     required this.backgroundImage,
     required this.items,
     this.previewImage,
