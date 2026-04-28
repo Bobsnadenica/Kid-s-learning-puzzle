@@ -29,10 +29,10 @@ class HomePage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      isBg ? "Избери игра" : "Choose a Game",
+                      isBg ? "Как назоваваме нещата" : "How we name things",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 30,
+                        fontSize: 24,
                         fontWeight: FontWeight.w900,
                         color: Colors.brown.shade800,
                         shadows: const [

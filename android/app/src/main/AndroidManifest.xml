@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.privileged.animal_puzzle_game">
+    package="com.howwename.things">
    <application
-        android:label="animal_puzzle_game"
+        android:label="How we name things"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
