@@ -33,20 +33,20 @@ class LanguagePage extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          "Kids Learning Game",
+                          "How we name things",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 30,
+                            fontSize: 26,
                             fontWeight: FontWeight.w900,
                             color: Colors.brown.shade800,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          "Детска Учебна Игра",
+                          "Как назоваваме нещата",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: 20,
                             fontWeight: FontWeight.w700,
                             color: Colors.brown.shade600,
                           ),

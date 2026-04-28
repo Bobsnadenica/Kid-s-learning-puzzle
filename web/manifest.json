@@ -1,11 +1,11 @@
 {
-    "name": "animal_puzzle_game",
-    "short_name": "animal_puzzle_game",
+    "name": "How we name things",
+    "short_name": "NameThings",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#6D4C41",
+    "theme_color": "#6D4C41",
+    "description": "A bilingual kids matching game for learning words in English and Bulgarian.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

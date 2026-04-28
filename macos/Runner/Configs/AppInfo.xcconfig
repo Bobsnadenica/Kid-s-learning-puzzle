@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = animal_puzzle_game
+PRODUCT_NAME = How we name things
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.privileged.animalPuzzleGame
+PRODUCT_BUNDLE_IDENTIFIER = com.howwename.things
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.privileged. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 How We Name Things. All rights reserved.

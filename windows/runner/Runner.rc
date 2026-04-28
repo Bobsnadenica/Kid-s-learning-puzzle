@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.privileged" "\0"
-            VALUE "FileDescription", "animal_puzzle_game" "\0"
+            VALUE "CompanyName", "How We Name Things" "\0"
+            VALUE "FileDescription", "How we name things" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "animal_puzzle_game" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 com.privileged. All rights reserved." "\0"
-            VALUE "OriginalFilename", "animal_puzzle_game.exe" "\0"
-            VALUE "ProductName", "animal_puzzle_game" "\0"
+            VALUE "InternalName", "how_we_name_things" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 How We Name Things. All rights reserved." "\0"
+            VALUE "OriginalFilename", "how_we_name_things.exe" "\0"
+            VALUE "ProductName", "How we name things" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
