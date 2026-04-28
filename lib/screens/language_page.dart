@@ -21,7 +21,11 @@ class LanguagePage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("🎮", style: TextStyle(fontSize: 80)),
+                  Image.asset(
+                    "assets/logo/logo.jpg",
+                    height: 140,
+                    fit: BoxFit.contain,
+                  ),
                   const SizedBox(height: 18),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),

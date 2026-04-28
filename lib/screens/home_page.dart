@@ -27,6 +27,12 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
               child: Row(
                 children: [
+                  Image.asset(
+                    "assets/logo/logo.jpg",
+                    height: 48,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       isBg ? "Как назоваваме нещата" : "How we name things",
@@ -41,6 +47,7 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(width: 10),
                   // Trophy leaderboard button
                   GestureDetector(
                     onTap: () => Navigator.of(context).pushNamed("leaderboard"),
