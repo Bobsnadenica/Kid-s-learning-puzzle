@@ -32,9 +32,15 @@ class _GamePageState extends State<GamePage> {
     }
   }
 
+  String _display(Content item) =>
+      Global.language == 'bg' ? (item.bg ?? item.value) : item.value;
+
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height * 0.16;
+    final bool isBg = Global.language == 'bg';
+    final int itemCount = Global.list.length;
+    final double availableHeight = MediaQuery.of(context).size.height * 0.76;
+    final double height = (availableHeight / itemCount).clamp(60.0, 130.0);
     final double feedbackWidth = MediaQuery.of(context).size.width * 0.38;
 
     return SafeArea(
@@ -53,10 +59,12 @@ class _GamePageState extends State<GamePage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
                 child: Text(
-                  Global.title.isEmpty ? "Matching Game" : Global.title,
+                  Global.title.isEmpty
+                      ? (isBg ? "Игра за съвпадение" : "Matching Game")
+                      : Global.title,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 32,
+                    fontSize: 28,
                     fontWeight: FontWeight.w900,
                     color: Colors.brown.shade800,
                     shadows: const [
@@ -117,9 +125,7 @@ class _GamePageState extends State<GamePage> {
                                           showDialog(
                                             context: context,
                                             barrierDismissible: false,
-                                            builder: (context) {
-                                              return dialog();
-                                            },
+                                            builder: (context) => _dialog(isBg),
                                           );
                                         }
                                       });
@@ -129,19 +135,14 @@ class _GamePageState extends State<GamePage> {
                                       });
                                     }
                                   },
-                                  builder:
-                                      (context, candidateData, rejectedData) {
+                                  builder: (context, candidateData, rejectedData) {
                                     return Container(
                                       height: height,
-                                      margin: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                      ),
+                                      margin: const EdgeInsets.symmetric(horizontal: 10),
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
                                         color: Colors.white.withValues(
-                                          alpha: candidateData.isNotEmpty
-                                              ? 0.65
-                                              : 0.45,
+                                          alpha: candidateData.isNotEmpty ? 0.65 : 0.45,
                                         ),
                                         borderRadius: BorderRadius.circular(24),
                                         border: Border.all(
@@ -153,27 +154,18 @@ class _GamePageState extends State<GamePage> {
                                       ),
                                       alignment: Alignment.center,
                                       child: Text(
-                                        item.value,
+                                        _display(item),
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           shadows: [
-                                            Shadow(
-                                              color: Colors.brown.shade900,
-                                              blurRadius: 30,
-                                            ),
-                                            const Shadow(
-                                              color: Colors.black87,
-                                              blurRadius: 10,
-                                            ),
-                                            const Shadow(
-                                              color: Colors.black,
-                                              blurRadius: 25,
-                                            ),
+                                            Shadow(color: Colors.brown.shade900, blurRadius: 30),
+                                            const Shadow(color: Colors.black87, blurRadius: 10),
+                                            const Shadow(color: Colors.black, blurRadius: 25),
                                           ],
-                                          letterSpacing: 1.5,
+                                          letterSpacing: 1.2,
                                           color: Colors.yellow.shade800,
                                           fontWeight: FontWeight.w900,
-                                          fontSize: 28,
+                                          fontSize: 22,
                                         ),
                                       ),
                                     );
@@ -191,10 +183,10 @@ class _GamePageState extends State<GamePage> {
                 color: Colors.white.withValues(alpha: 0.5),
                 padding: const EdgeInsets.all(12),
                 child: Text(
-                  "  Your Score : $score",
+                  isBg ? "  Резултат : $score" : "  Your Score : $score",
                   style: TextStyle(
                     color: Colors.brown.shade700,
-                    fontSize: 30,
+                    fontSize: 28,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -221,9 +213,7 @@ class _GamePageState extends State<GamePage> {
             width: 3,
           ),
         ),
-        child: Center(
-          child: _buildItemVisual(item, height),
-        ),
+        child: Center(child: _buildItemVisual(item, height)),
       ),
     );
   }
@@ -235,42 +225,36 @@ class _GamePageState extends State<GamePage> {
 
     if (item.emoji != null) {
       return FittedBox(
-        child: Text(
-          item.emoji!,
-          style: const TextStyle(fontSize: 64),
-        ),
+        child: Text(item.emoji!, style: const TextStyle(fontSize: 64)),
       );
     }
 
     return Icon(
       item.icon,
-      size: height * 0.58,
+      size: height * 0.55,
       color: item.color ?? Colors.brown.shade700,
     );
   }
 
-  AlertDialog dialog() {
+  AlertDialog _dialog(bool isBg) {
     return AlertDialog(
       shape: OutlineInputBorder(
         borderRadius: BorderRadius.circular(30),
-        borderSide: BorderSide(
-          color: Colors.brown.shade800,
-          width: 5,
-        ),
+        borderSide: BorderSide(color: Colors.brown.shade800, width: 5),
       ),
       backgroundColor: Colors.white.withValues(alpha: 0.9),
       title: Center(
         child: Text(
-          "Game Over",
+          isBg ? "Браво! 🎉" : "Well Done! 🎉",
           style: TextStyle(
-            fontSize: 35,
+            fontSize: 32,
             color: Colors.brown.shade800,
             fontWeight: FontWeight.w700,
           ),
         ),
       ),
       content: Text(
-        "- Your Score -\n$score",
+        isBg ? "- Твоят резултат -\n$score" : "- Your Score -\n$score",
         textAlign: TextAlign.center,
         style: TextStyle(
           color: Colors.black.withValues(alpha: 0.7),
@@ -287,13 +271,10 @@ class _GamePageState extends State<GamePage> {
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
                   shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
                 onPressed: () {
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil("/", (route) => false);
+                  Navigator.of(context).pushNamedAndRemoveUntil("/", (route) => false);
                 },
                 child: Icon(Icons.home, color: Colors.brown.shade700),
               ),
@@ -303,10 +284,7 @@ class _GamePageState extends State<GamePage> {
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
                   shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 25,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
                 ),
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -319,7 +297,7 @@ class _GamePageState extends State<GamePage> {
                   });
                 },
                 child: Text(
-                  "Restart",
+                  isBg ? "Отново" : "Restart",
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.brown.shade700,
