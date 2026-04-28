@@ -46,6 +46,13 @@ class Global {
     Content(value: "Camel",      bg: "Камила",     image: "assets/animals_emoji/camel.png",      isDropped: false),
     Content(value: "Kangaroo",   bg: "Кенгуру",    image: "assets/animals_emoji/kangaroo.png",   isDropped: false),
     Content(value: "Koala",      bg: "Коала",      image: "assets/animals_emoji/koala.png",      isDropped: false),
+    Content(value: "Peacock",    bg: "Паун",       emoji: "🦚",  isDropped: false),
+    Content(value: "Flamingo",   bg: "Фламинго",   emoji: "🦩",  isDropped: false),
+    Content(value: "Otter",      bg: "Видра",      emoji: "🦦",  isDropped: false),
+    Content(value: "Hedgehog",   bg: "Таралеж",    emoji: "🦔",  isDropped: false),
+    Content(value: "Bat",        bg: "Прилеп",     emoji: "🦇",  isDropped: false),
+    Content(value: "Sloth",      bg: "Ленивец",    emoji: "🦥",  isDropped: false),
+    Content(value: "Skunk",      bg: "Скунс",      emoji: "🦨",  isDropped: false),
   ];
 
   // ─── Fruits (17 items) ───────────────────────────────────────────────────
@@ -228,6 +235,11 @@ class Global {
     Content(value: "Rugby",      bg: "Ръгби",         emoji: "🏉",  isDropped: false),
     Content(value: "Hockey",     bg: "Хокей",         emoji: "🏒",  isDropped: false),
     Content(value: "Badminton",  bg: "Бадминтон",     emoji: "🏸",  isDropped: false),
+    Content(value: "Wrestling",  bg: "Борба",         emoji: "🤼",  isDropped: false),
+    Content(value: "Fencing",    bg: "Фехтовка",      emoji: "🤺",  isDropped: false),
+    Content(value: "Kayaking",   bg: "Каяк",          emoji: "🚣",  isDropped: false),
+    Content(value: "Gymnastics", bg: "Гимнастика",    emoji: "🤸",  isDropped: false),
+    Content(value: "Polo",       bg: "Поло",          emoji: "🏇",  isDropped: false),
   ];
 
   // ─── Body Parts (16 items) ───────────────────────────────────────────────
@@ -248,6 +260,79 @@ class Global {
     Content(value: "Thumb",   bg: "Палец",   emoji: "👍",  isDropped: false),
     Content(value: "Elbow",   bg: "Лакът",   emoji: "🦾",  isDropped: false),
     Content(value: "Knee",    bg: "Коляно",  emoji: "🦿",  isDropped: false),
+  ];
+
+  // ─── Space (15 items) ────────────────────────────────────────────────────
+  static final List<Content> space = [
+    Content(value: "Sun",        bg: "Слънце",      emoji: "☀️",   isDropped: false),
+    Content(value: "Moon",       bg: "Луна",        emoji: "🌙",   isDropped: false),
+    Content(value: "Star",       bg: "Звезда",      emoji: "⭐",   isDropped: false),
+    Content(value: "Rocket",     bg: "Ракета",      emoji: "🚀",   isDropped: false),
+    Content(value: "Planet",     bg: "Планета",     emoji: "🪐",   isDropped: false),
+    Content(value: "Comet",      bg: "Комета",      emoji: "☄️",   isDropped: false),
+    Content(value: "Astronaut",  bg: "Астронавт",   emoji: "👨‍🚀",  isDropped: false),
+    Content(value: "Telescope",  bg: "Телескоп",    emoji: "🔭",   isDropped: false),
+    Content(value: "Satellite",  bg: "Сателит",     emoji: "🛰️",   isDropped: false),
+    Content(value: "Alien",      bg: "Извънземен",  emoji: "👽",   isDropped: false),
+    Content(value: "UFO",        bg: "НЛО",         emoji: "🛸",   isDropped: false),
+    Content(value: "Meteor",     bg: "Метеор",      emoji: "🌠",   isDropped: false),
+    Content(value: "Black Hole", bg: "Черна дупка", emoji: "🕳️",   isDropped: false),
+    Content(value: "Nebula",     bg: "Мъглявина",   emoji: "🌌",   isDropped: false),
+    Content(value: "Galaxy",     bg: "Галактика",   emoji: "🌀",   isDropped: false),
+  ];
+
+  // ─── Clothing (15 items) ─────────────────────────────────────────────────
+  static final List<Content> clothing = [
+    Content(value: "Shirt",    bg: "Риза",          emoji: "👕",  isDropped: false),
+    Content(value: "Pants",    bg: "Панталон",      emoji: "👖",  isDropped: false),
+    Content(value: "Dress",    bg: "Рокля",         emoji: "👗",  isDropped: false),
+    Content(value: "Hat",      bg: "Шапка",         emoji: "🎩",  isDropped: false),
+    Content(value: "Shoes",    bg: "Обувки",        emoji: "👟",  isDropped: false),
+    Content(value: "Socks",    bg: "Чорапи",        emoji: "🧦",  isDropped: false),
+    Content(value: "Jacket",   bg: "Яке",           emoji: "🧥",  isDropped: false),
+    Content(value: "Gloves",   bg: "Ръкавици",      emoji: "🧤",  isDropped: false),
+    Content(value: "Scarf",    bg: "Шал",           emoji: "🧣",  isDropped: false),
+    Content(value: "Boots",    bg: "Ботуши",        emoji: "👢",  isDropped: false),
+    Content(value: "Crown",    bg: "Корона",        emoji: "👑",  isDropped: false),
+    Content(value: "Ring",     bg: "Пръстен",       emoji: "💍",  isDropped: false),
+    Content(value: "Purse",    bg: "Чанта",         emoji: "👜",  isDropped: false),
+    Content(value: "Glasses",  bg: "Очила",         emoji: "👓",  isDropped: false),
+    Content(value: "Tie",      bg: "Вратовръзка",   emoji: "👔",  isDropped: false),
+  ];
+
+  // ─── Food (15 items) ─────────────────────────────────────────────────────
+  static final List<Content> food = [
+    Content(value: "Pizza",      bg: "Пица",        emoji: "🍕",  isDropped: false),
+    Content(value: "Burger",     bg: "Бургер",      emoji: "🍔",  isDropped: false),
+    Content(value: "Cake",       bg: "Торта",       emoji: "🎂",  isDropped: false),
+    Content(value: "Ice Cream",  bg: "Сладолед",    emoji: "🍦",  isDropped: false),
+    Content(value: "Cookie",     bg: "Бисквитка",   emoji: "🍪",  isDropped: false),
+    Content(value: "Bread",      bg: "Хляб",        emoji: "🍞",  isDropped: false),
+    Content(value: "Egg",        bg: "Яйце",        emoji: "🥚",  isDropped: false),
+    Content(value: "Cheese",     bg: "Сирене",      emoji: "🧀",  isDropped: false),
+    Content(value: "Rice",       bg: "Ориз",        emoji: "🍚",  isDropped: false),
+    Content(value: "Noodles",    bg: "Юфка",        emoji: "🍜",  isDropped: false),
+    Content(value: "Sandwich",   bg: "Сандвич",     emoji: "🥪",  isDropped: false),
+    Content(value: "Pancake",    bg: "Палачинка",   emoji: "🥞",  isDropped: false),
+    Content(value: "Donut",      bg: "Поничка",     emoji: "🍩",  isDropped: false),
+    Content(value: "Popcorn",    bg: "Пуканки",     emoji: "🍿",  isDropped: false),
+    Content(value: "Hot Dog",    bg: "Хот дог",     emoji: "🌭",  isDropped: false),
+  ];
+
+  // ─── Instruments (12 items) ───────────────────────────────────────────────
+  static final List<Content> instruments = [
+    Content(value: "Guitar",      bg: "Китара",     emoji: "🎸",  isDropped: false),
+    Content(value: "Piano",       bg: "Пиано",      emoji: "🎹",  isDropped: false),
+    Content(value: "Drums",       bg: "Барабани",   emoji: "🥁",  isDropped: false),
+    Content(value: "Violin",      bg: "Цигулка",    emoji: "🎻",  isDropped: false),
+    Content(value: "Trumpet",     bg: "Тромпет",    emoji: "🎺",  isDropped: false),
+    Content(value: "Saxophone",   bg: "Саксофон",   emoji: "🎷",  isDropped: false),
+    Content(value: "Microphone",  bg: "Микрофон",   emoji: "🎤",  isDropped: false),
+    Content(value: "Accordion",   bg: "Акордеон",   emoji: "🪗",  isDropped: false),
+    Content(value: "Banjo",       bg: "Банджо",     emoji: "🪕",  isDropped: false),
+    Content(value: "Flute",       bg: "Флейта",     emoji: "🪈",  isDropped: false),
+    Content(value: "Xylophone",   bg: "Ксилофон",   emoji: "🪘",  isDropped: false),
+    Content(value: "Horn",        bg: "Рог",        emoji: "📯",  isDropped: false),
   ];
 
   // ─── Categories ──────────────────────────────────────────────────────────
@@ -335,6 +420,34 @@ class Global {
       items: bodyParts,
       previewEmoji: "👁️",
       accentColor: const Color(0xFFF57C00),
+    ),
+    GameCategory(
+      title: "Space",       bgTitle: "Космос",
+      backgroundImage: "assets/backgrounds/shapes.jpg",
+      items: space,
+      previewEmoji: "🚀",
+      accentColor: const Color(0xFF673AB7),
+    ),
+    GameCategory(
+      title: "Clothing",    bgTitle: "Облекло",
+      backgroundImage: "assets/backgrounds/professions.jpg",
+      items: clothing,
+      previewEmoji: "👗",
+      accentColor: const Color(0xFFE91E63),
+    ),
+    GameCategory(
+      title: "Food",        bgTitle: "Храна",
+      backgroundImage: "assets/backgrounds/fruits.jpg",
+      items: food,
+      previewEmoji: "🍕",
+      accentColor: const Color(0xFFFF9800),
+    ),
+    GameCategory(
+      title: "Instruments", bgTitle: "Инструменти",
+      backgroundImage: "assets/backgrounds/sports.jpg",
+      items: instruments,
+      previewEmoji: "🎸",
+      accentColor: const Color(0xFF009688),
     ),
   ];
 }

@@ -2,8 +2,15 @@ import 'dart:async';
 import 'package:animal_puzzle_game/leaderboard.dart';
 import 'package:animal_puzzle_game/modal.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 import '../global.dart';
+
+const _kLottieCorrect = 'assets/lottie/yes.lottie';
+const _kLottieWrong   = 'assets/lottie/no.lottie';
+const _kLottieWinner  = 'assets/lottie/conffeti.lottie';
+
+enum _FeedbackType { none, correct, wrong, winner }
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -16,6 +23,7 @@ class _GamePageState extends State<GamePage> {
   int score = 0;
   int gameOver = 0;
   List<Content> list2 = [];
+  _FeedbackType _feedbackType = _FeedbackType.none;
 
   final Stopwatch _stopwatch = Stopwatch();
   Timer? _ticker;
@@ -57,6 +65,7 @@ class _GamePageState extends State<GamePage> {
       score = 0;
       gameOver = 0;
       _elapsedSeconds = 0;
+      _feedbackType = _FeedbackType.none;
       _setup();
     });
   }
@@ -65,6 +74,16 @@ class _GamePageState extends State<GamePage> {
     _stopwatch.stop();
     _ticker?.cancel();
     setState(() => _elapsedSeconds = _stopwatch.elapsed.inSeconds);
+  }
+
+  void _showFeedback(_FeedbackType type, {int dismissAfterMs = 800}) {
+    if (!mounted) return;
+    setState(() => _feedbackType = type);
+    if (dismissAfterMs > 0) {
+      Future.delayed(Duration(milliseconds: dismissAfterMs), () {
+        if (mounted) setState(() => _feedbackType = _FeedbackType.none);
+      });
+    }
   }
 
   String _display(Content item) =>
@@ -86,186 +105,243 @@ class _GamePageState extends State<GamePage> {
 
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              opacity: 0.87,
-              image: AssetImage(Global.image),
-            ),
-          ),
-          alignment: Alignment.center,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
-                child: Text(
-                  Global.title.isEmpty
-                      ? (isBg ? "Игра за съвпадение" : "Matching Game")
-                      : Global.title,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.brown.shade800,
-                    shadows: const [
-                      Shadow(color: Colors.white, blurRadius: 14)
-                    ],
-                  ),
+        body: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  opacity: 0.87,
+                  image: AssetImage(Global.image),
                 ),
               ),
-              Expanded(
-                child: Row(
-                  children: [
-                    // Left: draggable visuals
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(Global.list.length, (index) {
-                          final item = Global.list[index];
-                          return item.isDropped
-                              ? SizedBox(height: height)
-                              : Draggable<String>(
-                                  data: item.value,
-                                  childWhenDragging: _buildMatchCard(
-                                      item, height,
-                                      faded: true),
-                                  feedback: Material(
-                                    color: Colors.transparent,
-                                    child: SizedBox(
-                                      width: feedbackWidth,
-                                      child: _buildMatchCard(item, height),
-                                    ),
-                                  ),
-                                  child: _buildMatchCard(item, height),
-                                );
-                        }),
-                      ),
-                    ),
-                    // Right: drop target labels
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(list2.length, (index) {
-                          final item = list2[index];
-                          return item.isDropped
-                              ? SizedBox(height: height)
-                              : DragTarget<String>(
-                                  onAcceptWithDetails: (details) {
-                                    if (item.value == details.data) {
-                                      setState(() {
-                                        for (final src in Global.list) {
-                                          if (src.value == item.value) {
-                                            src.isDropped = true;
-                                          }
-                                        }
-                                        item.isDropped = true;
-                                        score += 10;
-                                        gameOver++;
-                                        if (gameOver == Global.list.length) {
-                                          _stopTimer();
-                                          Leaderboard.add(LeaderboardEntry(
-                                            category: Global.categoryKey,
-                                            score: score,
-                                            timeSeconds: _elapsedSeconds,
-                                          ));
-                                          showDialog(
-                                            context: context,
-                                            barrierDismissible: false,
-                                            builder: (_) => _dialog(isBg),
-                                          );
-                                        }
-                                      });
-                                    } else {
-                                      setState(() => score -= 5);
-                                    }
-                                  },
-                                  builder: (context, candidateData, _) {
-                                    final bool hovering =
-                                        candidateData.isNotEmpty;
-                                    return Container(
-                                      height: height,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 10),
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withValues(
-                                            alpha: hovering ? 0.65 : 0.45),
-                                        borderRadius:
-                                            BorderRadius.circular(24),
-                                        border: Border.all(
-                                          color: hovering
-                                              ? Colors.green.shade600
-                                              : Colors.brown.shade700,
-                                          width: 3,
-                                        ),
-                                      ),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        _display(item),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          shadows: [
-                                            Shadow(
-                                                color: Colors.brown.shade900,
-                                                blurRadius: 30),
-                                            const Shadow(
-                                                color: Colors.black87,
-                                                blurRadius: 10),
-                                          ],
-                                          letterSpacing: 1.0,
-                                          color: Colors.yellow.shade800,
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                        }),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Score + timer bar
-              Container(
-                width: double.infinity,
-                color: Colors.white.withValues(alpha: 0.5),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      isBg
-                          ? "Резултат: $score"
-                          : "Score: $score",
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
+                    child: Text(
+                      Global.title.isEmpty
+                          ? (isBg ? "Игра за съвпадение" : "Matching Game")
+                          : Global.title,
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.brown.shade700,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.brown.shade800,
+                        shadows: const [
+                          Shadow(color: Colors.white, blurRadius: 14)
+                        ],
                       ),
                     ),
-                    Row(
+                  ),
+                  Expanded(
+                    child: Row(
                       children: [
-                        const Text("⏱️",
-                            style: TextStyle(fontSize: 20)),
-                        const SizedBox(width: 4),
+                        // Left: draggable visuals
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: List.generate(Global.list.length, (index) {
+                              final item = Global.list[index];
+                              return item.isDropped
+                                  ? SizedBox(height: height)
+                                  : Draggable<String>(
+                                      data: item.value,
+                                      childWhenDragging: _buildMatchCard(
+                                          item, height,
+                                          faded: true),
+                                      feedback: Material(
+                                        color: Colors.transparent,
+                                        child: SizedBox(
+                                          width: feedbackWidth,
+                                          child: _buildMatchCard(item, height),
+                                        ),
+                                      ),
+                                      child: _buildMatchCard(item, height),
+                                    );
+                            }),
+                          ),
+                        ),
+                        // Right: drop target labels
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: List.generate(list2.length, (index) {
+                              final item = list2[index];
+                              return item.isDropped
+                                  ? SizedBox(height: height)
+                                  : DragTarget<String>(
+                                      onAcceptWithDetails: (details) {
+                                        if (item.value == details.data) {
+                                          setState(() {
+                                            for (final src in Global.list) {
+                                              if (src.value == item.value) {
+                                                src.isDropped = true;
+                                              }
+                                            }
+                                            item.isDropped = true;
+                                            score += 10;
+                                            gameOver++;
+                                          });
+                                          if (gameOver == Global.list.length) {
+                                            _stopTimer();
+                                            Leaderboard.add(LeaderboardEntry(
+                                              category: Global.categoryKey,
+                                              score: score,
+                                              timeSeconds: _elapsedSeconds,
+                                            ));
+                                            _showFeedback(_FeedbackType.winner,
+                                                dismissAfterMs: 0);
+                                            Future.delayed(
+                                                const Duration(
+                                                    milliseconds: 1500), () {
+                                              if (!mounted) return;
+                                              setState(() => _feedbackType =
+                                                  _FeedbackType.none);
+                                              if (!context.mounted) return;
+                                              showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (_) => _dialog(
+                                                    Global.language == 'bg'),
+                                              );
+                                            });
+                                          } else {
+                                            _showFeedback(_FeedbackType.correct);
+                                          }
+                                        } else {
+                                          setState(() => score -= 5);
+                                          _showFeedback(_FeedbackType.wrong,
+                                              dismissAfterMs: 600);
+                                        }
+                                      },
+                                      builder: (context, candidateData, _) {
+                                        final bool hovering =
+                                            candidateData.isNotEmpty;
+                                        return Container(
+                                          height: height,
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withValues(
+                                                alpha: hovering ? 0.65 : 0.45),
+                                            borderRadius:
+                                                BorderRadius.circular(24),
+                                            border: Border.all(
+                                              color: hovering
+                                                  ? Colors.green.shade600
+                                                  : Colors.brown.shade700,
+                                              width: 3,
+                                            ),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            _display(item),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              shadows: [
+                                                Shadow(
+                                                    color:
+                                                        Colors.brown.shade900,
+                                                    blurRadius: 30),
+                                                const Shadow(
+                                                    color: Colors.black87,
+                                                    blurRadius: 10),
+                                              ],
+                                              letterSpacing: 1.0,
+                                              color: Colors.yellow.shade800,
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 20,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                            }),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Score + timer bar
+                  Container(
+                    width: double.infinity,
+                    color: Colors.white.withValues(alpha: 0.5),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Text(
-                          _formatTime(_elapsedSeconds),
+                          isBg ? "Резултат: $score" : "Score: $score",
                           style: TextStyle(
                             color: Colors.brown.shade700,
                             fontSize: 24,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
+                        Row(
+                          children: [
+                            const Text("⏱️",
+                                style: TextStyle(fontSize: 20)),
+                            const SizedBox(width: 4),
+                            Text(
+                              _formatTime(_elapsedSeconds),
+                              style: TextStyle(
+                                color: Colors.brown.shade700,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
+            _buildFeedbackOverlay(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeedbackOverlay() {
+    if (_feedbackType == _FeedbackType.none) return const SizedBox.shrink();
+
+    final url = switch (_feedbackType) {
+      _FeedbackType.correct => _kLottieCorrect,
+      _FeedbackType.wrong   => _kLottieWrong,
+      _FeedbackType.winner  => _kLottieWinner,
+      _FeedbackType.none    => '',
+    };
+
+    final fallbackIcon = _feedbackType == _FeedbackType.wrong
+        ? Icons.cancel_rounded
+        : Icons.check_circle_rounded;
+    final fallbackColor = _feedbackType == _FeedbackType.wrong
+        ? Colors.red.shade400
+        : Colors.green.shade400;
+
+    return IgnorePointer(
+      child: Container(
+        color: Colors.black.withValues(alpha: 0.15),
+        alignment: Alignment.center,
+        child: SizedBox(
+          width: 260,
+          height: 260,
+          child: Lottie.asset(
+            url,
+            repeat: false,
+            errorBuilder: (_, __, ___) => Icon(
+              fallbackIcon,
+              size: 120,
+              color: fallbackColor,
+            ),
           ),
         ),
       ),
@@ -329,9 +405,7 @@ class _GamePageState extends State<GamePage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            isBg
-                ? "Резултат: $score точки"
-                : "Score: $score pts",
+            isBg ? "Резултат: $score точки" : "Score: $score pts",
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.brown.shade800,
