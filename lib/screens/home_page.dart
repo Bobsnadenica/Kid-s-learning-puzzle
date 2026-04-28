@@ -3,19 +3,8 @@ import 'package:flutter/material.dart';
 import '../global.dart';
 import '../modal.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  void _toggleLanguage() {
-    setState(() {
-      Global.language = Global.language == 'en' ? 'bg' : 'en';
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,35 +25,22 @@ class _HomePageState extends State<HomePage> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text(
-                      isBg ? "Избери игра" : "Choose a Game",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.brown.shade800,
-                        shadows: const [
-                          Shadow(color: Colors.white, blurRadius: 10),
-                        ],
-                      ),
-                    ),
-                  ),
-                  _buildLanguageToggle(),
-                ],
+              child: Text(
+                isBg ? "Избери игра" : "Choose a Game",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.brown.shade800,
+                  shadows: const [Shadow(color: Colors.white, blurRadius: 10)],
+                ),
               ),
             ),
             ...Global.categories.map(
               (category) => InkWell(
                 onTap: () {
-                  // Reset dropped state each time a category is entered
-                  for (final item in category.items) {
-                    item.isDropped = false;
-                  }
-                  Global.list = category.items;
+                  Global.currentPool = category.items;
+                  Global.list = Global.randomFrom(category.items);
                   Global.image = category.backgroundImage;
                   Global.title = isBg
                       ? (category.bgTitle ?? category.title)
@@ -72,39 +48,6 @@ class _HomePageState extends State<HomePage> {
                   Navigator.of(context).pushNamed("game_page");
                 },
                 child: _gameContainer(category, isBg),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLanguageToggle() {
-    final bool isBg = Global.language == 'bg';
-    return GestureDetector(
-      onTap: _toggleLanguage,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.75),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.brown.shade400, width: 2),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '🇬🇧',
-              style: TextStyle(
-                fontSize: isBg ? 18 : 24,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              '🇧🇬',
-              style: TextStyle(
-                fontSize: isBg ? 24 : 18,
               ),
             ),
           ],
@@ -151,8 +94,8 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 6),
                 Text(
                   isBg
-                      ? "Свържи ${category.items.length} картинки с думи"
-                      : "Match ${category.items.length} pictures to words",
+                      ? "${category.items.length} различни въпроса"
+                      : "${category.items.length} items to discover",
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -181,15 +124,8 @@ class _HomePageState extends State<HomePage> {
       ),
       alignment: Alignment.center,
       child: category.previewEmoji != null
-          ? Text(
-              category.previewEmoji!,
-              style: const TextStyle(fontSize: 52),
-            )
-          : Icon(
-              category.previewIcon,
-              size: 56,
-              color: category.accentColor,
-            ),
+          ? Text(category.previewEmoji!, style: const TextStyle(fontSize: 52))
+          : Icon(category.previewIcon, size: 56, color: category.accentColor),
     );
   }
 }

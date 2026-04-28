@@ -18,18 +18,27 @@ class _GamePageState extends State<GamePage> {
   @override
   void initState() {
     super.initState();
-    list2 = [...Global.list];
-    list2.shuffle();
-    _resetDroppedState();
+    _setup();
   }
 
-  void _resetDroppedState() {
+  void _setup() {
+    list2 = [...Global.list];
+    list2.shuffle();
     for (final item in Global.list) {
       item.isDropped = false;
     }
     for (final item in list2) {
       item.isDropped = false;
     }
+  }
+
+  void _restart() {
+    Global.list = Global.randomFrom(Global.currentPool);
+    setState(() {
+      score = 0;
+      gameOver = 0;
+      _setup();
+    });
   }
 
   String _display(Content item) =>
@@ -40,7 +49,7 @@ class _GamePageState extends State<GamePage> {
     final bool isBg = Global.language == 'bg';
     final int itemCount = Global.list.length;
     final double availableHeight = MediaQuery.of(context).size.height * 0.76;
-    final double height = (availableHeight / itemCount).clamp(60.0, 130.0);
+    final double height = (availableHeight / itemCount).clamp(58.0, 128.0);
     final double feedbackWidth = MediaQuery.of(context).size.width * 0.38;
 
     return SafeArea(
@@ -67,15 +76,14 @@ class _GamePageState extends State<GamePage> {
                     fontSize: 28,
                     fontWeight: FontWeight.w900,
                     color: Colors.brown.shade800,
-                    shadows: const [
-                      Shadow(color: Colors.white, blurRadius: 14),
-                    ],
+                    shadows: const [Shadow(color: Colors.white, blurRadius: 14)],
                   ),
                 ),
               ),
               Expanded(
                 child: Row(
                   children: [
+                    // Left column: draggable images/emoji/icons
                     Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -85,11 +93,8 @@ class _GamePageState extends State<GamePage> {
                               ? SizedBox(height: height)
                               : Draggable<String>(
                                   data: item.value,
-                                  childWhenDragging: _buildMatchCard(
-                                    item,
-                                    height,
-                                    faded: true,
-                                  ),
+                                  childWhenDragging:
+                                      _buildMatchCard(item, height, faded: true),
                                   feedback: Material(
                                     color: Colors.transparent,
                                     child: SizedBox(
@@ -102,6 +107,7 @@ class _GamePageState extends State<GamePage> {
                         }),
                       ),
                     ),
+                    // Right column: drop target labels
                     Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -113,9 +119,9 @@ class _GamePageState extends State<GamePage> {
                                   onAcceptWithDetails: (details) {
                                     if (item.value == details.data) {
                                       setState(() {
-                                        for (final sourceItem in Global.list) {
-                                          if (sourceItem.value == item.value) {
-                                            sourceItem.isDropped = true;
+                                        for (final src in Global.list) {
+                                          if (src.value == item.value) {
+                                            src.isDropped = true;
                                           }
                                         }
                                         item.isDropped = true;
@@ -125,28 +131,29 @@ class _GamePageState extends State<GamePage> {
                                           showDialog(
                                             context: context,
                                             barrierDismissible: false,
-                                            builder: (context) => _dialog(isBg),
+                                            builder: (_) => _dialog(isBg),
                                           );
                                         }
                                       });
                                     } else {
-                                      setState(() {
-                                        score -= 5;
-                                      });
+                                      setState(() => score -= 5);
                                     }
                                   },
-                                  builder: (context, candidateData, rejectedData) {
+                                  builder: (context, candidateData, _) {
+                                    final bool hovering =
+                                        candidateData.isNotEmpty;
                                     return Container(
                                       height: height,
-                                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 10),
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
                                         color: Colors.white.withValues(
-                                          alpha: candidateData.isNotEmpty ? 0.65 : 0.45,
-                                        ),
-                                        borderRadius: BorderRadius.circular(24),
+                                            alpha: hovering ? 0.65 : 0.45),
+                                        borderRadius:
+                                            BorderRadius.circular(24),
                                         border: Border.all(
-                                          color: candidateData.isNotEmpty
+                                          color: hovering
                                               ? Colors.green.shade600
                                               : Colors.brown.shade700,
                                           width: 3,
@@ -158,14 +165,17 @@ class _GamePageState extends State<GamePage> {
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           shadows: [
-                                            Shadow(color: Colors.brown.shade900, blurRadius: 30),
-                                            const Shadow(color: Colors.black87, blurRadius: 10),
-                                            const Shadow(color: Colors.black, blurRadius: 25),
+                                            Shadow(
+                                                color: Colors.brown.shade900,
+                                                blurRadius: 30),
+                                            const Shadow(
+                                                color: Colors.black87,
+                                                blurRadius: 10),
                                           ],
-                                          letterSpacing: 1.2,
+                                          letterSpacing: 1.0,
                                           color: Colors.yellow.shade800,
                                           fontWeight: FontWeight.w900,
-                                          fontSize: 22,
+                                          fontSize: 20,
                                         ),
                                       ),
                                     );
@@ -222,13 +232,11 @@ class _GamePageState extends State<GamePage> {
     if (item.image != null) {
       return Image.asset(item.image!, fit: BoxFit.contain);
     }
-
     if (item.emoji != null) {
       return FittedBox(
         child: Text(item.emoji!, style: const TextStyle(fontSize: 64)),
       );
     }
-
     return Icon(
       item.icon,
       size: height * 0.55,
@@ -266,43 +274,36 @@ class _GamePageState extends State<GamePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil("/", (route) => false);
-                },
-                child: Icon(Icons.home, color: Colors.brown.shade700),
+            // Home button
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                shape: const StadiumBorder(),
+                padding: const EdgeInsets.symmetric(
+                    vertical: 12, horizontal: 16),
               ),
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil("home_page", (r) => false);
+              },
+              child: Icon(Icons.home, color: Colors.brown.shade700),
             ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    Global.list.shuffle();
-                    list2.shuffle();
-                    _resetDroppedState();
-                    score = 0;
-                    gameOver = 0;
-                  });
-                },
-                child: Text(
-                  isBg ? "Отново" : "Restart",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.brown.shade700,
-                    fontWeight: FontWeight.bold,
-                  ),
+            // Restart with NEW random items
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                shape: const StadiumBorder(),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 25, vertical: 12),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _restart();
+              },
+              child: Text(
+                isBg ? "Отново" : "Restart",
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.brown.shade700,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
