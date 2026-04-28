@@ -1,9 +1,15 @@
+import 'package:animal_puzzle_game/leaderboard.dart';
 import 'package:animal_puzzle_game/screens/game_page.dart';
 import 'package:animal_puzzle_game/screens/home_page.dart';
 import 'package:animal_puzzle_game/screens/language_page.dart';
+import 'package:animal_puzzle_game/screens/leaderboard_page.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Leaderboard.load();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -16,6 +22,7 @@ class MyApp extends StatelessWidget {
         "/": (context) => const LanguagePage(),
         "home_page": (context) => const HomePage(),
         "game_page": (context) => const GamePage(),
+        "leaderboard": (context) => const LeaderboardPage(),
       },
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:animal_puzzle_game/leaderboard.dart';
 import 'package:animal_puzzle_game/modal.dart';
 import 'package:flutter/material.dart';
 
@@ -15,10 +17,20 @@ class _GamePageState extends State<GamePage> {
   int gameOver = 0;
   List<Content> list2 = [];
 
+  final Stopwatch _stopwatch = Stopwatch();
+  Timer? _ticker;
+  int _elapsedSeconds = 0;
+
   @override
   void initState() {
     super.initState();
     _setup();
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
   }
 
   void _setup() {
@@ -30,6 +42,13 @@ class _GamePageState extends State<GamePage> {
     for (final item in list2) {
       item.isDropped = false;
     }
+    _stopwatch
+      ..reset()
+      ..start();
+    _ticker?.cancel();
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() => _elapsedSeconds = _stopwatch.elapsed.inSeconds);
+    });
   }
 
   void _restart() {
@@ -37,12 +56,25 @@ class _GamePageState extends State<GamePage> {
     setState(() {
       score = 0;
       gameOver = 0;
+      _elapsedSeconds = 0;
       _setup();
     });
   }
 
+  void _stopTimer() {
+    _stopwatch.stop();
+    _ticker?.cancel();
+    setState(() => _elapsedSeconds = _stopwatch.elapsed.inSeconds);
+  }
+
   String _display(Content item) =>
       Global.language == 'bg' ? (item.bg ?? item.value) : item.value;
+
+  String _formatTime(int secs) {
+    final m = secs ~/ 60;
+    final s = secs % 60;
+    return '$m:${s.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,24 +98,26 @@ class _GamePageState extends State<GamePage> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
                 child: Text(
                   Global.title.isEmpty
                       ? (isBg ? "Игра за съвпадение" : "Matching Game")
                       : Global.title,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 26,
                     fontWeight: FontWeight.w900,
                     color: Colors.brown.shade800,
-                    shadows: const [Shadow(color: Colors.white, blurRadius: 14)],
+                    shadows: const [
+                      Shadow(color: Colors.white, blurRadius: 14)
+                    ],
                   ),
                 ),
               ),
               Expanded(
                 child: Row(
                   children: [
-                    // Left column: draggable images/emoji/icons
+                    // Left: draggable visuals
                     Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -93,8 +127,9 @@ class _GamePageState extends State<GamePage> {
                               ? SizedBox(height: height)
                               : Draggable<String>(
                                   data: item.value,
-                                  childWhenDragging:
-                                      _buildMatchCard(item, height, faded: true),
+                                  childWhenDragging: _buildMatchCard(
+                                      item, height,
+                                      faded: true),
                                   feedback: Material(
                                     color: Colors.transparent,
                                     child: SizedBox(
@@ -107,7 +142,7 @@ class _GamePageState extends State<GamePage> {
                         }),
                       ),
                     ),
-                    // Right column: drop target labels
+                    // Right: drop target labels
                     Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -128,6 +163,12 @@ class _GamePageState extends State<GamePage> {
                                         score += 10;
                                         gameOver++;
                                         if (gameOver == Global.list.length) {
+                                          _stopTimer();
+                                          Leaderboard.add(LeaderboardEntry(
+                                            category: Global.categoryKey,
+                                            score: score,
+                                            timeSeconds: _elapsedSeconds,
+                                          ));
                                           showDialog(
                                             context: context,
                                             barrierDismissible: false,
@@ -187,18 +228,41 @@ class _GamePageState extends State<GamePage> {
                   ],
                 ),
               ),
+              // Score + timer bar
               Container(
                 width: double.infinity,
-                alignment: Alignment.center,
                 color: Colors.white.withValues(alpha: 0.5),
-                padding: const EdgeInsets.all(12),
-                child: Text(
-                  isBg ? "  Резултат : $score" : "  Your Score : $score",
-                  style: TextStyle(
-                    color: Colors.brown.shade700,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                  ),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      isBg
+                          ? "Резултат: $score"
+                          : "Score: $score",
+                      style: TextStyle(
+                        color: Colors.brown.shade700,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        const Text("⏱️",
+                            style: TextStyle(fontSize: 20)),
+                        const SizedBox(width: 4),
+                        Text(
+                          _formatTime(_elapsedSeconds),
+                          style: TextStyle(
+                            color: Colors.brown.shade700,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -261,20 +325,36 @@ class _GamePageState extends State<GamePage> {
           ),
         ),
       ),
-      content: Text(
-        isBg ? "- Твоят резултат -\n$score" : "- Your Score -\n$score",
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: Colors.black.withValues(alpha: 0.7),
-          fontWeight: FontWeight.bold,
-          fontSize: 30,
-        ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            isBg
+                ? "Резултат: $score точки"
+                : "Score: $score pts",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.brown.shade800,
+              fontWeight: FontWeight.w800,
+              fontSize: 26,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "⏱️  ${_formatTime(_elapsedSeconds)}",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.brown.shade600,
+              fontWeight: FontWeight.w700,
+              fontSize: 22,
+            ),
+          ),
+        ],
       ),
       actions: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            // Home button
             OutlinedButton(
               style: OutlinedButton.styleFrom(
                 shape: const StadiumBorder(),
@@ -287,7 +367,6 @@ class _GamePageState extends State<GamePage> {
               },
               child: Icon(Icons.home, color: Colors.brown.shade700),
             ),
-            // Restart with NEW random items
             OutlinedButton(
               style: OutlinedButton.styleFrom(
                 shape: const StadiumBorder(),
