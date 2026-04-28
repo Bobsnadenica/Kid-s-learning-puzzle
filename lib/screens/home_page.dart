@@ -24,16 +24,39 @@ class HomePage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 14),
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
-              child: Text(
-                isBg ? "Избери игра" : "Choose a Game",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.brown.shade800,
-                  shadows: const [Shadow(color: Colors.white, blurRadius: 10)],
-                ),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      isBg ? "Избери игра" : "Choose a Game",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.brown.shade800,
+                        shadows: const [
+                          Shadow(color: Colors.white, blurRadius: 10)
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Trophy leaderboard button
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pushNamed("leaderboard"),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.75),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                            color: const Color(0xFFFFD700), width: 2.5),
+                      ),
+                      child: const Text("🏆",
+                          style: TextStyle(fontSize: 28)),
+                    ),
+                  ),
+                ],
               ),
             ),
             ...Global.categories.map(
@@ -41,6 +64,7 @@ class HomePage extends StatelessWidget {
                 onTap: () {
                   Global.currentPool = category.items;
                   Global.list = Global.randomFrom(category.items);
+                  Global.categoryKey = category.title;
                   Global.image = category.backgroundImage;
                   Global.title = isBg
                       ? (category.bgTitle ?? category.title)
@@ -73,36 +97,20 @@ class HomePage extends StatelessWidget {
           Expanded(
             flex: 2,
             child: SizedBox(
-              height: 110,
+              height: 100,
               child: Center(child: _buildPreview(category)),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
             flex: 3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  displayTitle,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.brown.shade700,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  isBg
-                      ? "${category.items.length} различни въпроса"
-                      : "${category.items.length} items to discover",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.brown.shade500,
-                  ),
-                ),
-              ],
+            child: Text(
+              displayTitle,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: Colors.brown.shade700,
+              ),
             ),
           ),
         ],
@@ -116,16 +124,16 @@ class HomePage extends StatelessWidget {
     }
 
     return Container(
-      width: 100,
-      height: 100,
+      width: 90,
+      height: 90,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: category.accentColor.withValues(alpha: 0.16),
       ),
       alignment: Alignment.center,
       child: category.previewEmoji != null
-          ? Text(category.previewEmoji!, style: const TextStyle(fontSize: 52))
-          : Icon(category.previewIcon, size: 56, color: category.accentColor),
+          ? Text(category.previewEmoji!, style: const TextStyle(fontSize: 48))
+          : Icon(category.previewIcon, size: 52, color: category.accentColor),
     );
   }
 }
