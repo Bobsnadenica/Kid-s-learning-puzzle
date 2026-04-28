@@ -22,7 +22,7 @@ class LanguagePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    "assets/logo/logo.png",
+                    "assets/logo/transparent_logo.png",
                     height: 140,
                     fit: BoxFit.contain,
                   ),
