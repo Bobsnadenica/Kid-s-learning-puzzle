@@ -335,6 +335,52 @@ class Global {
     Content(value: "Horn",        bg: "Рог",        emoji: "📯",  isDropped: false),
   ];
 
+  // ─── Numbers (10 items) ──────────────────────────────────────────────────
+  static final List<Content> numbers = [
+    Content(value: "One",   bg: "Едно",   emoji: "1️⃣", isDropped: false),
+    Content(value: "Two",   bg: "Две",    emoji: "2️⃣", isDropped: false),
+    Content(value: "Three", bg: "Три",    emoji: "3️⃣", isDropped: false),
+    Content(value: "Four",  bg: "Четири", emoji: "4️⃣", isDropped: false),
+    Content(value: "Five",  bg: "Пет",    emoji: "5️⃣", isDropped: false),
+    Content(value: "Six",   bg: "Шест",   emoji: "6️⃣", isDropped: false),
+    Content(value: "Seven", bg: "Седем",  emoji: "7️⃣", isDropped: false),
+    Content(value: "Eight", bg: "Осем",   emoji: "8️⃣", isDropped: false),
+    Content(value: "Nine",  bg: "Девет",  emoji: "9️⃣", isDropped: false),
+    Content(value: "Ten",   bg: "Десет",  emoji: "🔟",  isDropped: false),
+  ];
+
+  // ─── Emotions (12 items) ─────────────────────────────────────────────────
+  static final List<Content> emotions = [
+    Content(value: "Happy",     bg: "Щастлив",   emoji: "😀", isDropped: false),
+    Content(value: "Sad",       bg: "Тъжен",     emoji: "😢", isDropped: false),
+    Content(value: "Angry",     bg: "Ядосан",    emoji: "😠", isDropped: false),
+    Content(value: "Scared",    bg: "Уплашен",   emoji: "😨", isDropped: false),
+    Content(value: "Surprised", bg: "Изненадан", emoji: "😮", isDropped: false),
+    Content(value: "Sleepy",    bg: "Сънлив",    emoji: "😴", isDropped: false),
+    Content(value: "Silly",     bg: "Смешен",    emoji: "🤪", isDropped: false),
+    Content(value: "Sick",      bg: "Болен",     emoji: "🤒", isDropped: false),
+    Content(value: "Cool",      bg: "Готин",     emoji: "😎", isDropped: false),
+    Content(value: "Love",      bg: "Влюбен",    emoji: "🥰", isDropped: false),
+    Content(value: "Thinking",  bg: "Мислещ",    emoji: "🤔", isDropped: false),
+    Content(value: "Laughing",  bg: "Смеещ се",  emoji: "🤣", isDropped: false),
+  ];
+
+  // ─── Insects (12 items) ──────────────────────────────────────────────────
+  static final List<Content> insects = [
+    Content(value: "Ant",         bg: "Мравка",   emoji: "🐜",  isDropped: false),
+    Content(value: "Bee",         bg: "Пчела",    emoji: "🐝",  isDropped: false),
+    Content(value: "Butterfly",   bg: "Пеперуда", emoji: "🦋",  isDropped: false),
+    Content(value: "Ladybug",     bg: "Калинка",  emoji: "🐞",  isDropped: false),
+    Content(value: "Caterpillar", bg: "Гъсеница", emoji: "🐛",  isDropped: false),
+    Content(value: "Spider",      bg: "Паяк",     emoji: "🕷️",  isDropped: false),
+    Content(value: "Snail",       bg: "Охлюв",    emoji: "🐌",  isDropped: false),
+    Content(value: "Cricket",     bg: "Щурец",    emoji: "🦗",  isDropped: false),
+    Content(value: "Scorpion",    bg: "Скорпион", emoji: "🦂",  isDropped: false),
+    Content(value: "Worm",        bg: "Червей",   emoji: "🪱",  isDropped: false),
+    Content(value: "Mosquito",    bg: "Комар",    emoji: "🦟",  isDropped: false),
+    Content(value: "Beetle",      bg: "Бръмбар",  emoji: "🪲",  isDropped: false),
+  ];
+
   // ─── Categories ──────────────────────────────────────────────────────────
   static List<GameCategory> get categories => [
     GameCategory(
@@ -448,6 +494,27 @@ class Global {
       items: instruments,
       previewEmoji: "🎸",
       accentColor: const Color(0xFF009688),
+    ),
+    GameCategory(
+      title: "Numbers",     bgTitle: "Числа",
+      backgroundImage: "assets/backgrounds/colors.jpg",
+      items: numbers,
+      previewEmoji: "1️⃣",
+      accentColor: const Color(0xFF1565C0),
+    ),
+    GameCategory(
+      title: "Emotions",    bgTitle: "Емоции",
+      backgroundImage: "assets/backgrounds/flowers.jpg",
+      items: emotions,
+      previewEmoji: "😀",
+      accentColor: const Color(0xFFE91E63),
+    ),
+    GameCategory(
+      title: "Insects",     bgTitle: "Насекоми",
+      backgroundImage: "assets/backgrounds/weather.jpg",
+      items: insects,
+      previewEmoji: "🦋",
+      accentColor: const Color(0xFF558B2F),
     ),
   ];
 }

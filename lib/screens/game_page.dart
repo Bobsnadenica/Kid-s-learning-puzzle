@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:animal_puzzle_game/leaderboard.dart';
 import 'package:animal_puzzle_game/modal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 
 import '../global.dart';
@@ -119,20 +120,34 @@ class _GamePageState extends State<GamePage> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
-                    child: Text(
-                      Global.title.isEmpty
-                          ? (isBg ? "Игра за съвпадение" : "Matching Game")
-                          : Global.title,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.brown.shade800,
-                        shadows: const [
-                          Shadow(color: Colors.white, blurRadius: 14)
-                        ],
-                      ),
+                    padding: const EdgeInsets.fromLTRB(8, 10, 8, 6),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () => Navigator.of(context)
+                              .pushNamedAndRemoveUntil(
+                                  "home_page", (r) => false),
+                          icon: Icon(Icons.home_rounded,
+                              color: Colors.brown.shade800, size: 30),
+                        ),
+                        Expanded(
+                          child: Text(
+                            Global.title.isEmpty
+                                ? (isBg ? "Игра за съвпадение" : "Matching Game")
+                                : Global.title,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.brown.shade800,
+                              shadows: const [
+                                Shadow(color: Colors.white, blurRadius: 14)
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 48),
+                      ],
                     ),
                   ),
                   Expanded(
@@ -184,6 +199,7 @@ class _GamePageState extends State<GamePage> {
                                             score += 10;
                                             gameOver++;
                                           });
+                                          HapticFeedback.mediumImpact();
                                           if (gameOver == Global.list.length) {
                                             _stopTimer();
                                             Leaderboard.add(LeaderboardEntry(
@@ -212,6 +228,7 @@ class _GamePageState extends State<GamePage> {
                                           }
                                         } else {
                                           setState(() => score -= 5);
+                                          HapticFeedback.heavyImpact();
                                           _showFeedback(_FeedbackType.wrong,
                                               dismissAfterMs: 600);
                                         }
@@ -253,7 +270,7 @@ class _GamePageState extends State<GamePage> {
                                               letterSpacing: 1.0,
                                               color: Colors.yellow.shade800,
                                               fontWeight: FontWeight.w900,
-                                              fontSize: 20,
+                                              fontSize: 22,
                                             ),
                                           ),
                                         );
@@ -275,7 +292,7 @@ class _GamePageState extends State<GamePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          isBg ? "Резултат: $score" : "Score: $score",
+                          "⭐ $score",
                           style: TextStyle(
                             color: Colors.brown.shade700,
                             fontSize: 24,

@@ -96,8 +96,15 @@ class HomePage extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(color: category.accentColor, width: 4),
+        boxShadow: [
+          BoxShadow(
+            color: category.accentColor.withValues(alpha: 0.35),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -114,12 +121,18 @@ class HomePage extends StatelessWidget {
             child: Text(
               displayTitle,
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 26,
                 fontWeight: FontWeight.w800,
                 color: Colors.brown.shade700,
               ),
             ),
           ),
+          Icon(
+            Icons.arrow_forward_ios_rounded,
+            size: 18,
+            color: category.accentColor,
+          ),
+          const SizedBox(width: 4),
         ],
       ),
     );
