@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../global.dart';
 import '../modal.dart';
+import '../tts_service.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final bool isBg = Global.language == 'bg';
@@ -47,7 +53,24 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
+                  // Mute button
+                  GestureDetector(
+                    onTap: () =>
+                        setState(() => TtsService.muted = !TtsService.muted),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.75),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        TtsService.muted ? "🔇" : "🔊",
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   // Trophy leaderboard button
                   GestureDetector(
                     onTap: () => Navigator.of(context).pushNamed("leaderboard"),

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 
+import '../tts_service.dart';
+
 import '../global.dart';
 
 const _kLottieCorrect = 'assets/lottie/yes.json';
@@ -146,7 +148,17 @@ class _GamePageState extends State<GamePage> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 48),
+                        IconButton(
+                          onPressed: () => setState(
+                              () => TtsService.muted = !TtsService.muted),
+                          icon: Icon(
+                            TtsService.muted
+                                ? Icons.volume_off_rounded
+                                : Icons.volume_up_rounded,
+                            color: Colors.brown.shade800,
+                            size: 28,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -163,6 +175,10 @@ class _GamePageState extends State<GamePage> {
                                   ? SizedBox(height: height)
                                   : Draggable<String>(
                                       data: item.value,
+                                      onDragStarted: () => TtsService.speak(
+                                        _display(item),
+                                        isBg: Global.language == 'bg',
+                                      ),
                                       childWhenDragging: _buildMatchCard(
                                           item, height,
                                           faded: true),
@@ -236,7 +252,12 @@ class _GamePageState extends State<GamePage> {
                                       builder: (context, candidateData, _) {
                                         final bool hovering =
                                             candidateData.isNotEmpty;
-                                        return Container(
+                                        return GestureDetector(
+                                          onTap: () => TtsService.speak(
+                                            _display(item),
+                                            isBg: Global.language == 'bg',
+                                          ),
+                                          child: Container(
                                           height: height,
                                           margin: const EdgeInsets.symmetric(
                                               horizontal: 10),
@@ -273,6 +294,7 @@ class _GamePageState extends State<GamePage> {
                                               fontSize: 22,
                                             ),
                                           ),
+                                        ),
                                         );
                                       },
                                     );
