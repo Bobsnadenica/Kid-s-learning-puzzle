@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../global.dart';
-import '../leaderboard.dart';
 import '../modal.dart';
-import '../tts_service.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final bool isBg = Global.language == 'bg';
@@ -34,12 +27,6 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
               child: Row(
                 children: [
-                  Image.asset(
-                    "assets/logo/transparent_logo.png",
-                    height: 48,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       isBg ? "Как назоваваме нещата" : "How we name things",
@@ -54,24 +41,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  // Mute button
-                  GestureDetector(
-                    onTap: () =>
-                        setState(() => TtsService.muted = !TtsService.muted),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.75),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Text(
-                        TtsService.muted ? "🔇" : "🔊",
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
                   // Trophy leaderboard button
                   GestureDetector(
                     onTap: () => Navigator.of(context).pushNamed("leaderboard"),
@@ -85,23 +54,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: const Text("🏆",
                           style: TextStyle(fontSize: 28)),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Language switch button
-                  GestureDetector(
-                    onTap: () =>
-                        Navigator.of(context).pushReplacementNamed('/'),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.75),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Text(
-                        isBg ? "🇧🇬" : "🇬🇧",
-                        style: const TextStyle(fontSize: 24),
-                      ),
                     ),
                   ),
                 ],
@@ -137,15 +89,8 @@ class _HomePageState extends State<HomePage> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(25),
         border: Border.all(color: category.accentColor, width: 4),
-        boxShadow: [
-          BoxShadow(
-            color: category.accentColor.withValues(alpha: 0.35),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Row(
         children: [
@@ -159,46 +104,16 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(width: 12),
           Expanded(
             flex: 3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  displayTitle,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.brown.shade700,
-                  ),
-                ),
-                _buildStars(category.title),
-              ],
+            child: Text(
+              displayTitle,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: Colors.brown.shade700,
+              ),
             ),
           ),
-          Icon(
-            Icons.arrow_forward_ios_rounded,
-            size: 18,
-            color: category.accentColor,
-          ),
-          const SizedBox(width: 4),
         ],
-      ),
-    );
-  }
-
-  Widget _buildStars(String categoryKey) {
-    final stars = Leaderboard.starsFor(categoryKey);
-    if (stars == 0) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(top: 4),
-      child: Row(
-        children: List.generate(3, (i) => Text(
-          i < stars ? '⭐' : '☆',
-          style: TextStyle(
-            fontSize: 16,
-            color: i < stars ? null : Colors.brown.shade300,
-          ),
-        )),
       ),
     );
   }

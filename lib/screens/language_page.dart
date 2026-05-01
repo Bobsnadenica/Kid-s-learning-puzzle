@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../global.dart';
 
 class LanguagePage extends StatelessWidget {
@@ -22,11 +21,7 @@ class LanguagePage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    "assets/logo/transparent_logo.png",
-                    height: 140,
-                    fit: BoxFit.contain,
-                  ),
+                  const Text("🎮", style: TextStyle(fontSize: 80)),
                   const SizedBox(height: 18),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
@@ -155,10 +150,7 @@ class _LangButtonState extends State<_LangButton>
     await _controller.reverse();
     if (!mounted) return;
     Global.language = widget.lang;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('app_language', widget.lang);
-    if (!mounted) return;
-    Navigator.of(context).pushReplacementNamed('home_page');
+    Navigator.of(context).pushReplacementNamed("home_page");
   }
 
   @override

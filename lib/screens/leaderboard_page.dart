@@ -3,25 +3,18 @@ import '../global.dart';
 import '../leaderboard.dart';
 
 const Map<String, String> _categoryEmojis = {
-  "Animals":    "🦁",
-  "Fruits":     "🍎",
+  "Animals": "🦁",
+  "Fruits": "🍎",
   "Vegetables": "🥕",
-  "Flowers":    "🌸",
-  "Professions":"👨‍⚕️",
-  "Vehicles":   "🚗",
-  "Weather":    "☀️",
-  "Colors":     "🎨",
-  "Shapes":     "⭐",
-  "Ocean":      "🌊",
-  "Sports":     "⚽",
+  "Flowers": "🌸",
+  "Professions": "👨‍⚕️",
+  "Vehicles": "🚗",
+  "Weather": "☀️",
+  "Colors": "🎨",
+  "Shapes": "⭐",
+  "Ocean": "🌊",
+  "Sports": "⚽",
   "Body Parts": "👁️",
-  "Space":      "🚀",
-  "Clothing":   "👗",
-  "Food":       "🍕",
-  "Instruments":"🎸",
-  "Numbers":    "1️⃣",
-  "Emotions":   "😀",
-  "Insects":    "🦋",
 };
 
 class LeaderboardPage extends StatefulWidget {
