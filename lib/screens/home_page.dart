@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../global.dart';
+import '../leaderboard.dart';
 import '../modal.dart';
 import '../tts_service.dart';
 
@@ -86,6 +87,23 @@ class _HomePageState extends State<HomePage> {
                           style: TextStyle(fontSize: 28)),
                     ),
                   ),
+                  const SizedBox(width: 8),
+                  // Language switch button
+                  GestureDetector(
+                    onTap: () =>
+                        Navigator.of(context).pushReplacementNamed('/'),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.75),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        isBg ? "🇧🇬" : "🇬🇧",
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -141,13 +159,20 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(width: 12),
           Expanded(
             flex: 3,
-            child: Text(
-              displayTitle,
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w800,
-                color: Colors.brown.shade700,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  displayTitle,
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.brown.shade700,
+                  ),
+                ),
+                _buildStars(category.title),
+              ],
             ),
           ),
           Icon(
@@ -157,6 +182,23 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(width: 4),
         ],
+      ),
+    );
+  }
+
+  Widget _buildStars(String categoryKey) {
+    final stars = Leaderboard.starsFor(categoryKey);
+    if (stars == 0) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        children: List.generate(3, (i) => Text(
+          i < stars ? '⭐' : '☆',
+          style: TextStyle(
+            fontSize: 16,
+            color: i < stars ? null : Colors.brown.shade300,
+          ),
+        )),
       ),
     );
   }

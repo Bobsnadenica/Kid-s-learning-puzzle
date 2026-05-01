@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../global.dart';
 
 class LanguagePage extends StatelessWidget {
@@ -154,7 +155,10 @@ class _LangButtonState extends State<_LangButton>
     await _controller.reverse();
     if (!mounted) return;
     Global.language = widget.lang;
-    Navigator.of(context).pushReplacementNamed("home_page");
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('app_language', widget.lang);
+    if (!mounted) return;
+    Navigator.of(context).pushReplacementNamed('home_page');
   }
 
   @override

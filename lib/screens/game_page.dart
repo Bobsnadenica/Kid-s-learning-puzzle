@@ -32,6 +32,9 @@ class _GamePageState extends State<GamePage> {
   Timer? _ticker;
   int _elapsedSeconds = 0;
 
+  Timer? _dragSpeakTimer;
+  int _introGen = 0;
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +44,7 @@ class _GamePageState extends State<GamePage> {
   @override
   void dispose() {
     _ticker?.cancel();
+    _dragSpeakTimer?.cancel();
     super.dispose();
   }
 
@@ -60,6 +64,24 @@ class _GamePageState extends State<GamePage> {
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) setState(() => _elapsedSeconds = _stopwatch.elapsed.inSeconds);
     });
+    _startIntroRead();
+  }
+
+  /// Reads all 6 words aloud in sequence when a round starts.
+  /// Uses a generation counter so restarts cancel any pending reads.
+  void _startIntroRead() {
+    if (TtsService.muted) return;
+    _introGen++;
+    final gen = _introGen;
+    final items = List<Content>.from(Global.list);
+    for (int i = 0; i < items.length; i++) {
+      Future.delayed(Duration(milliseconds: 500 + i * 850), () {
+        if (!mounted || _introGen != gen) return;
+        if (!items[i].isDropped) {
+          TtsService.speak(_display(items[i]), isBg: Global.language == 'bg');
+        }
+      });
+    }
   }
 
   void _restart() {
@@ -175,10 +197,20 @@ class _GamePageState extends State<GamePage> {
                                   ? SizedBox(height: height)
                                   : Draggable<String>(
                                       data: item.value,
-                                      onDragStarted: () => TtsService.speak(
-                                        _display(item),
-                                        isBg: Global.language == 'bg',
-                                      ),
+                                      onDragStarted: () {
+                                        _dragSpeakTimer?.cancel();
+                                        _dragSpeakTimer = Timer(
+                                          const Duration(milliseconds: 180),
+                                          () => TtsService.speak(
+                                            _display(item),
+                                            isBg: Global.language == 'bg',
+                                          ),
+                                        );
+                                      },
+                                      onDragEnd: (_) =>
+                                          _dragSpeakTimer?.cancel(),
+                                      onDraggableCanceled: (_, __) =>
+                                          _dragSpeakTimer?.cancel(),
                                       childWhenDragging: _buildMatchCard(
                                           item, height,
                                           faded: true),
@@ -216,6 +248,12 @@ class _GamePageState extends State<GamePage> {
                                             gameOver++;
                                           });
                                           HapticFeedback.mediumImpact();
+                                          TtsService.speak(
+                                            Global.language == 'bg'
+                                                ? 'Браво! ${_display(item)}'
+                                                : 'Great! ${_display(item)}',
+                                            isBg: Global.language == 'bg',
+                                          );
                                           if (gameOver == Global.list.length) {
                                             _stopTimer();
                                             Leaderboard.add(LeaderboardEntry(
@@ -245,6 +283,12 @@ class _GamePageState extends State<GamePage> {
                                         } else {
                                           setState(() => score -= 5);
                                           HapticFeedback.heavyImpact();
+                                          TtsService.speak(
+                                            Global.language == 'bg'
+                                                ? 'Опитай пак!'
+                                                : 'Try again!',
+                                            isBg: Global.language == 'bg',
+                                          );
                                           _showFeedback(_FeedbackType.wrong,
                                               dismissAfterMs: 600);
                                         }

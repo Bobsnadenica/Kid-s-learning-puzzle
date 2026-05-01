@@ -79,4 +79,15 @@ class Leaderboard {
   }
 
   static List<LeaderboardEntry> get entries => List.unmodifiable(_entries);
+
+  /// 0 = never played, 1 = completed, 2 = ≥35 pts, 3 = ≥55 pts (≤1 mistake).
+  static int starsFor(String categoryKey) {
+    final best = _entries
+        .where((e) => e.category == categoryKey)
+        .fold<int>(-1, (m, e) => e.score > m ? e.score : m);
+    if (best < 0) return 0;
+    if (best >= 55) return 3;
+    if (best >= 35) return 2;
+    return 1;
+  }
 }
